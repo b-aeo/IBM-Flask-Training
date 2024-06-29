@@ -1,3 +1,4 @@
+'''This server project is to experiment with creating a range of flask application instances and assigning HTTP codes'''
 
 ## Import the flask library with flask and jsonify modules
 from flask import Flask, jsonify, make_response
