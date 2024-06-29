@@ -12,5 +12,5 @@ def index():
 @app.route("/no_content")
 def no_content():
 ##Using the jsonify function to return a message in json
-    return jsonify( message = "No content found", 204)
+    return jsonify( message = "No content found"), 204
 
