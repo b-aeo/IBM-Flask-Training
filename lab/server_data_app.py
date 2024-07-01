@@ -82,6 +82,15 @@ def get_data():
 
 
 @app.route("/name_search")
+def name_name():
+try:
+    ## Creating the query variable to store the query parameter
+    query = request.args.get("q")
+
+    if not query:
+        
+
+
 
 
 
