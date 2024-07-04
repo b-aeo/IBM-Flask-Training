@@ -1,6 +1,6 @@
 '''This server uses data within a flask application instance using dummy data from mockaroo in dictionary format'''
 
-from flask import Flask, make_response
+from flask import Flask, make_response, jsonify, request
 app = Flask(__name__)
 
 
@@ -83,12 +83,28 @@ def get_data():
 
 @app.route("/name_search")
 def name_name():
-try:
     ## Creating the query variable to store the query parameter
     query = request.args.get("q")
-
+    ## This is to check if there is data inside the query parameter
     if not query:
-        
+    ## Returns error message if query parameter is empty
+        return jsonify(message = "Invalid input parameter"), 422
+
+    else:
+    ## Defining empty dictionary
+        info = {}
+    ## Iterates through all dictionaries in data list
+        for i in data:
+    ## Checks if the dictionary value queried is in the dictionaries
+            if query in i.values():
+    ## Appends the dictionary to info if the value queried is found
+                info.update(i)
+                return info
+            else:
+                return jsonify(message = "Person not foundr"), 404
+
+    
+
 
 
 
