@@ -91,13 +91,20 @@ def find_by_uuid(uuid):
     ## it in the event that the query is not found in the data        
     return jsonify(message = "ID not found"), 404
     
+
+## The app delete decorator is for a delete request, it uses the uuid type and variable
+## for dynamic routing    
 @app.delete("/person/<uuid:uuid>")
 def delete_by_uuid(uuid):
+    ## To index the list later a count variable is created
     count = 0
     for i in data:
         if str(uuid) in i.values():
+            ## Deleting the relevant dictionary when queried ID is found
             del data[count]
             return jsonify(message = str(uuid))
+        ## Incrementing the counter if the ID is not found for indexing if it is found
+        ## further along the list
         count += 1
     return jsonify(message = "Person not found"), 404
 
