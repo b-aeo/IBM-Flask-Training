@@ -99,10 +99,12 @@ def name_name():
             if query in i.values():
     ## Appends the dictionary to info if the value queried is found
                 info.update(i)
+    ## Returns the appended dictionary
                 return info
-            else:
-                return jsonify(message = "Person not foundr"), 404
-
+    ## The for loop terminates the function in the event that the query is found
+    ## in the data placing the return for the 404 person not found error triggers
+    ## it in the event that the query is not found in the data        
+        return jsonify(message = "Person not found"), 404
     
 
 
