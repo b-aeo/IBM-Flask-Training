@@ -1,10 +1,7 @@
-'''This server uses data within a flask application instance using dummy data from mockaroo in dictionary format'''
-
 from flask import Flask, make_response, jsonify, request
+
 app = Flask(__name__)
 
-
-## Data for use in flask app
 data = [
     {
         "id": "3b58aade-8415-49dd-88db-8d7bce14932a",
@@ -63,48 +60,78 @@ data = [
     }
 ]
 
-## Defining route for get data method
-@app.route("/data")
-def get_data():
-    '''Method returns number of key value pairs in the data variable with error handling logic'''
-    ## Setting up error handling with try, except
+@app.get("/count")
+def count():
     try:
-        ## Checks if the data variable contains data
-        if data and len(data) > 0:
-            ## Returns the number of dictionaries in the data variable
-            return {"message": f"Data of length {len(data)} found"}
-        else:
-            ## If the data variable contains no data returns the below message with unexpected server error status
-            return {"message": "Data is empty"}, 500
-    except NameError:
-        ## Uses the NameError standard error in the event that the variable data contains no value or has no yet been defined when executing
-        return {"message": "Data not found"}, 404
-
-
-@app.route("/name_search")
-def name_search():
-    ## Creating the query variable to store the query parameter
-    query = request.args.get("q")
-    ## This is to check if there is data inside the query parameter
-    if not query:
-    ## Returns error message if query parameter is empty
-        return jsonify(message = "Invalid input parameter"), 422
-
-    else:
-    ## Defining empty dictionary
-        info = {}
-    ## Iterates through all dictionaries in data list
+        counter = 0
         for i in data:
+            counter += 1
+        return jsonify(message = f"Data count is: {counter}")
+        
+    except NameError:
+        return jsonify( message = "Data not defined" ), 500
+
+## <> within the app decorator creates a dynamic URL, creating a variable which can be
+## used in the function this variable is defined as type uuid and called uuid
+@app.get("/person/<uuid:uuid>")
+def find_by_uuid(uuid):
+    ## Defining empty dictionary
+    
+    info = {}
+    ## Iterates through all dictionaries in data list
+    for i in data:
     ## Checks if the dictionary value queried is in the dictionaries
-            if query in i.values():
+        if str(uuid) in i.values():
     ## Appends the dictionary to info if the value queried is found
-                info.update(i)
+            info.update(i)
     ## Returns the appended dictionary
-                return info
+            return info
     ## The for loop terminates the function in the event that the query is found
     ## in the data placing the return for the 404 person not found error triggers
     ## it in the event that the query is not found in the data        
-        return jsonify(message = "Person not found"), 404
+    return jsonify(message = "ID not found"), 404
     
+## The app delete decorator is for a delete request, it uses the uuid type and variable
+## for dynamic routing    
+@app.delete("/person/<uuid:uuid>")
+def delete_by_uuid(uuid):
+    ## To index the list later a count variable is created
+    count = 0
+    for i in data:
+        if str(uuid) in i.values():
+            ## Deleting the relevant dictionary when queried ID is found
+            del data[count]
+            return jsonify(message = str(uuid))
+        ## Incrementing the counter if the ID is not found for indexing if it is found
+        ## further along the list
+        count += 1
+    return jsonify(message = "Person not found"), 404
 
+@app.route("/person", methods = ["POST"])
+def add_by_uuid():
+    ## Using the get_json method to parse the json query
+    new_person = request.get_json()
+
+    for i in data:
+    ## Check if id has been included in the request
+        if "id" in new_person:
+    ## Check if the id in the post request is already in the data list
+            if new_person[id] == i["id"]:
+                return jsonify(message = "Person already stored in data"), 404
+        else:
+    ## If id is not in the request return message
+            return jsonify(message = "Invalid input parameter"), 400    
+    ## Append the post request into the list
+    data.append(new_person)
+    new_person_id = new_person["id"]
+    return jsonify(message = f"Person added with id: {new_person_id}")
+
+## Creating a custome error handler to overide default html error response for 404 errors
+@app.errorhandler(404)
+## The function takes in the error
+def handle_404(error):
+## Desired error response
+    return jsonify(message = "Resource not found"), 404
+
+    
 
