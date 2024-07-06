@@ -91,7 +91,6 @@ def find_by_uuid(uuid):
     ## it in the event that the query is not found in the data        
     return jsonify(message = "ID not found"), 404
     
-
 ## The app delete decorator is for a delete request, it uses the uuid type and variable
 ## for dynamic routing    
 @app.delete("/person/<uuid:uuid>")
@@ -110,19 +109,29 @@ def delete_by_uuid(uuid):
 
 @app.route("/person", methods = ["POST"])
 def add_by_uuid():
+    ## Using the get_json method to parse the json query
     new_person = request.get_json()
 
     for i in data:
+    ## Check if id has been included in the request
         if "id" in new_person:
+    ## Check if the id in the post request is already in the data list
             if new_person[id] == i["id"]:
                 return jsonify(message = "Person already stored in data"), 404
         else:
-            return jsonify(message = "Invalid input parameter"), 422    
+    ## If id is not in the request return message
+            return jsonify(message = "Invalid input parameter"), 400    
+    ## Append the post request into the list
     data.append(new_person)
     new_person_id = new_person["id"]
     return jsonify(message = f"Person added with id: {new_person_id}")
-        
-    
+
+## Creating a custome error handler to overide default html error response for 404 errors
+@app.errorhandler(404)
+## The function takes in the error
+def handle_404(error):
+## Desired error response
+    return jsonify(message = "Resource not found"), 404
 
     
 
