@@ -108,5 +108,21 @@ def delete_by_uuid(uuid):
         count += 1
     return jsonify(message = "Person not found"), 404
 
+@app.route("/person", methods = ["POST"])
+def add_by_uuid():
+    new_person = request.get_json()
 
+    for i in data:
+        if "id" in new_person:
+            if new_person[id] == i["id"]:
+                return jsonify(message = "Person already stored in data"), 404
+        else:
+            return jsonify(message = "Invalid input parameter"), 422    
+    data.append(new_person)
+    new_person_id = new_person["id"]
+    return jsonify(message = f"Person added with id: {new_person_id}")
+        
+    
+
+    
 
